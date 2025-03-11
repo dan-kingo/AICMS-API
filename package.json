@@ -11,6 +11,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@types/cors": "^2.8.17",
+    "cors": "^2.8.5",
     "esbuild": "^0.25.1",
     "express": "^4.21.2",
     "get-tsconfig": "^4.10.0",
