@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import debug from "debug";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 import accessLogStream from "./middlewares/loggerMiddleware";
 import corsOptions from "./middlewares/corsOptionsMiddleware";
