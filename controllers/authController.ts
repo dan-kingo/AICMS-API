@@ -33,10 +33,10 @@ const register = async (req: Request<registerFormData>, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ userName: req.body.userName });
 
     if (!user) {
-      res.status(400).json({ message: "Invalid email address" });
+      res.status(400).json({ message: "Invalid Username!" });
       return;
     }
 
