@@ -5,13 +5,19 @@ import _ from "lodash";
 
 const register = async (req: Request<registerFormData>, res: Response) => {
   try {
+    const isFirstThreeAccount = (await User.countDocuments()) < 3;
+    const userData: registerFormData = {
+      ...req.body,
+      role: isFirstThreeAccount ? "admin" : "user",
+    };
+
     let registeredUser = await User.findOne({ email: req.body.email });
     if (registeredUser) {
       res.status(400).json({ message: "User already registered!" });
       return;
     }
     const user = await User.create(
-      _.pick(req.body, [
+      _.pick(userData, [
         "firstName",
         "lastName",
         "email",
