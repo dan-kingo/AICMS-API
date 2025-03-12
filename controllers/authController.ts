@@ -13,8 +13,11 @@ const register = async (req: Request<registerFormData>, res: Response) => {
       role: isFirstThreeAccount ? "admin" : "user",
     };
 
-    let registeredUser = await User.findOne({ email: req.body.email });
-    if (registeredUser) {
+    let registeredUserName = await User.findOne({
+      userName: req.body.userName,
+    });
+    let registeredUserEmail = await User.findOne({ email: req.body.email });
+    if (registeredUserName || registeredUserEmail) {
       res.status(400).json({ message: "User already registered!" });
       return;
     }
