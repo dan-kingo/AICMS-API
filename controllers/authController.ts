@@ -3,6 +3,7 @@ import { registerFormData } from "../schemas/registerSchema";
 import User from "../models/users";
 import _ from "lodash";
 import { hashPassword, comparePassword } from "../utils/hashPassword";
+import createJWT from "../utils/createJWT";
 
 const register = async (req: Request<registerFormData>, res: Response) => {
   try {
@@ -46,7 +47,8 @@ const login = async (req: Request, res: Response) => {
     if (!validPassword) {
       res.status(400).json({ message: "Invalid password" });
     } else {
-      res.status(201).json({ success: true, message: "User logged in" });
+      const token = createJWT({ userId: user._id.toString(), role: user.role });
+      res.send(token);
     }
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
