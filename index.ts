@@ -10,6 +10,7 @@ import accessLogStream from "./middlewares/loggerMiddleware";
 import corsOptions from "./middlewares/corsOptionsMiddleware";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRouter";
+import userRouter from "./routes/userRouter";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -22,8 +23,8 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(cors(corsOptions));
 app.use(cookieParser());
-// connect to database
 
+// connect to database
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => dbDebug("connected to database!"))
@@ -31,6 +32,7 @@ mongoose
 
 //routes
 app.use("/api", authRouter);
+app.use("/api", userRouter);
 
 app.listen(PORT, () => {
   appDebug(`server started at port ${PORT}`);
