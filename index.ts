@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import debug from "debug";
+import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -20,7 +21,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined", { stream: accessLogStream }));
 }
 app.use(cors(corsOptions));
-
+app.use(cookieParser());
 // connect to database
 
 mongoose

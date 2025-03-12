@@ -3,7 +3,7 @@ import { registerFormData } from "../schemas/registerSchema";
 import User from "../models/users";
 import _ from "lodash";
 import { hashPassword, comparePassword } from "../utils/hashPassword";
-import createJWT from "../utils/createJWT";
+import { createJWT } from "../utils/createJWT";
 
 const register = async (req: Request<registerFormData>, res: Response) => {
   try {
