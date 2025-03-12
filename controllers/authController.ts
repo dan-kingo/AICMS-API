@@ -61,4 +61,15 @@ const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-export { register, login };
+
+const logout = async (_req: Request, res: Response) => {
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  res.status(200).json({
+    success: true,
+    message: "Successfully logged out!",
+  });
+};
+export { register, login, logout };
