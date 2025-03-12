@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { registerFormData } from "../schemas/registerSchema";
 import User from "../models/users";
 import _ from "lodash";
+import hashPassword from "../utils/hashPassword";
 
 const register = async (req: Request<registerFormData>, res: Response) => {
   try {
@@ -16,18 +17,15 @@ const register = async (req: Request<registerFormData>, res: Response) => {
       res.status(400).json({ message: "User already registered!" });
       return;
     }
-    const user = await User.create(
-      _.pick(userData, [
-        "firstName",
-        "lastName",
-        "email",
-        "password",
-        "userName",
-        "role",
-      ])
-    );
+
+    // hash password
+    const hashPwd = await hashPassword(req.body.password);
+    userData.password = hashPwd;
+
+    const user = await User.create(userData);
     res.status(201).json({ success: true, user });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Internal server Error!" });
   }
 };
