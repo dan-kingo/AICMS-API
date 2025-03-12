@@ -19,6 +19,7 @@
     "esbuild": "^0.25.1",
     "express": "^4.21.2",
     "get-tsconfig": "^4.10.0",
+    "lodash": "^4.17.21",
     "mongoose": "^8.12.1",
     "resolve-pkg-maps": "^1.0.0",
     "undici-types": "^6.20.0",

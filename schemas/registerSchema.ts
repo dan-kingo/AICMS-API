@@ -42,6 +42,7 @@ const registerSchema = z
       .regex(/[\W_]/, {
         message: "Password must contain at least one special character.",
       }),
+    role: z.string().optional(),
 
     confirmPassword: z
       .string({ required_error: "Confirm Password is required." })
