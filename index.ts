@@ -11,6 +11,7 @@ import corsOptions from "./middlewares/corsOptionsMiddleware";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
+import chatRouter from "./routes/chatRouter";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ mongoose
 //routes
 app.use("/api", authRouter);
 app.use("/api", userRouter);
+app.use("/api", chatRouter);
 
 app.listen(PORT, () => {
   appDebug(`server started at port ${PORT}`);
