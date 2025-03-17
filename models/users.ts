@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     optional: true,
   },
+  resetToken: {
+    type: String,
+    optional: true,
+  },
+  resetTokenExpires: {
+    type: Number,
+    optional: true,
+  },
   phoneNumber: Number,
   role: {
     type: String,

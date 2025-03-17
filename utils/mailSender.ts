@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   service: process.env.MAIL_HOST,
   auth: {
     user: process.env.EMAIL_USER,

@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import User from "../models/users";
 import _ from "lodash";
 import { hashPassword, comparePassword } from "../utils/hashPassword";
 import { createJWT } from "../utils/createJWT";
-import { generateOTP, sendOTP } from "../utils/mailSender";
+import { generateOTP, sendOTP, transporter } from "../utils/mailSender";
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -76,29 +80,31 @@ const verifyOTP = async (req: Request, res: Response) => {
 const resendOTP = async (req: Request, res: Response) => {
   try {
     const { email } = req.cookies;
-    console.log("Email from cookies:", email); // Log email received from cookies
+    console.log("Email from cookies:", email);
 
     if (!email) {
       console.log("No email found in cookies");
-      return res.status(400).json({ message: "Email not found in cookies" });
+      res.status(400).json({ message: "Email not found in cookies" });
+      return;
     }
 
     const user = await User.findOne({ email });
-    console.log("User found:", user); // Log the user object
+    console.log("User found:", user);
 
     if (!user) {
       console.log("User not found in the database");
-      return res.status(400).json({ message: "User not found" });
+      res.status(400).json({ message: "User not found" });
+      return;
     }
 
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
-    console.log("OTP generated and saved:", otp); // Log OTP generated and saved
+    console.log("OTP generated and saved:", otp);
 
     await sendOTP(email, otp);
-    console.log("OTP sent to email:", email); // Log email the OTP was sent to
+    console.log("OTP sent to email:", email);
 
     res
       .status(200)
@@ -143,6 +149,42 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
+const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    user.resetToken = resetToken;
+    user.resetTokenExpires = Date.now() + 3600000;
+    await user.save();
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset Request",
+      text: `You requested a password reset. Click the following link to reset your password: ${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset link sent!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const logout = async (_req: Request, res: Response) => {
   res.cookie("token", "logout", {
     httpOnly: true,
@@ -153,4 +195,4 @@ const logout = async (_req: Request, res: Response) => {
     message: "Successfully logged out!",
   });
 };
-export { register, login, logout, verifyOTP, resendOTP };
+export { register, login, logout, verifyOTP, resendOTP, forgotPassword };
