@@ -75,11 +75,9 @@ const verifyOTP = async (req: Request, res: Response) => {
 
 const resendOTP = async (req: Request, res: Response) => {
   try {
-    // Extract email from cookies
     const { email } = req.cookies;
     console.log("Email from cookies:", email); // Log email received from cookies
 
-    // If no email in cookies, respond with an error
     if (!email) {
       console.log("No email found in cookies");
       return res.status(400).json({ message: "Email not found in cookies" });
