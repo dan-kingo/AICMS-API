@@ -5,6 +5,14 @@ const userSchema = new mongoose.Schema({
   lastName: String,
   userName: String,
   email: String,
+  otp: {
+    type: String,
+    optional: true,
+  },
+  otpExpires: {
+    type: Date,
+    optional: true,
+  },
   phoneNumber: Number,
   role: {
     type: String,

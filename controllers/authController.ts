@@ -1,36 +1,98 @@
 import { Request, Response } from "express";
-import { registerFormData } from "../schemas/registerSchema";
 import User from "../models/users";
 import _ from "lodash";
 import { hashPassword, comparePassword } from "../utils/hashPassword";
 import { createJWT } from "../utils/createJWT";
+import { generateOTP, sendOTP } from "../utils/mailSender";
 
-const register = async (req: Request<registerFormData>, res: Response) => {
+const register = async (req: Request, res: Response) => {
   try {
-    const isFirstThreeAccount = (await User.countDocuments()) < 3;
-    const userData: registerFormData = {
-      ...req.body,
-      role: isFirstThreeAccount ? "admin" : "user",
-    };
+    const { userName, firstName, email, password, phoneNumber } = req.body;
 
-    let registeredUserName = await User.findOne({
-      userName: req.body.userName,
-    });
-    let registeredUserEmail = await User.findOne({ email: req.body.email });
-    if (registeredUserName || registeredUserEmail) {
-      res.status(400).json({ message: "User already registered!" });
+    let existingUser = await User.findOne({ $or: [{ email }, { userName }] });
+    if (existingUser) {
+      res.status(400).json({ message: "Email already exists!" });
       return;
     }
+    const hashedPassword = await hashPassword(password);
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
 
-    // hash password
-    const hashPwd = await hashPassword(req.body.password);
-    userData.password = hashPwd;
+    const newUser = new User({
+      userName,
+      firstName,
+      email,
+      password: hashedPassword,
+      phoneNumber,
+      otp,
+      otpExpires,
+    });
 
-    const user = await User.create(userData);
-    res.status(201).json({ success: true, user });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Internal server Error!" });
+    await newUser.save();
+    await sendOTP(email, otp);
+    res.cookie("email", email, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.status(201).json({ success: true, message: "OTP sent to your email." });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const verifyOTP = async (req: Request, res: Response) => {
+  const email = req.cookies.email;
+  const { otp } = req.body;
+  console.log("Received OTP:", otp, "for Email:", email);
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    console.log("User not found!");
+    res.status(400).json({ message: "User not found" });
+    return;
+  }
+
+  console.log("Stored OTP:", user.otp);
+  console.log("OTP Expiry Time:", user.otpExpires);
+
+  if (user.otpExpires < new Date()) {
+    console.log("OTP has expired!");
+    res.status(400).json({ message: "OTP has expired" });
+    return;
+  }
+
+  if (user.otp !== otp) {
+    console.log("Invalid OTP provided!");
+    res.status(400).json({ message: "Invalid OTP" });
+    return;
+  }
+
+  console.log("OTP Verified Successfully!");
+  res.json({ success: true });
+  return;
+};
+
+const resendOTP = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+    await user.save();
+    await sendOTP(email, otp);
+
+    res
+      .status(200)
+      .json({ success: true, message: "OTP resent successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 };
 
@@ -78,4 +140,4 @@ const logout = async (_req: Request, res: Response) => {
     message: "Successfully logged out!",
   });
 };
-export { register, login, logout };
+export { register, login, logout, verifyOTP, resendOTP };
