@@ -185,6 +185,40 @@ const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+const resetPassword = async (req: Request, res: Response) => {
+  const { resetToken, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({
+      resetToken,
+      resetTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired reset token" });
+      return;
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successfully!" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error resetting password" });
+  }
+};
+
 const logout = async (_req: Request, res: Response) => {
   res.cookie("token", "logout", {
     httpOnly: true,
@@ -195,4 +229,12 @@ const logout = async (_req: Request, res: Response) => {
     message: "Successfully logged out!",
   });
 };
-export { register, login, logout, verifyOTP, resendOTP, forgotPassword };
+export {
+  register,
+  login,
+  logout,
+  verifyOTP,
+  resendOTP,
+  forgotPassword,
+  resetPassword,
+};
