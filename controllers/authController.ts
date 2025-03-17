@@ -75,23 +75,38 @@ const verifyOTP = async (req: Request, res: Response) => {
 
 const resendOTP = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    // Extract email from cookies
+    const { email } = req.cookies;
+    console.log("Email from cookies:", email); // Log email received from cookies
+
+    // If no email in cookies, respond with an error
+    if (!email) {
+      console.log("No email found in cookies");
+      return res.status(400).json({ message: "Email not found in cookies" });
+    }
+
     const user = await User.findOne({ email });
+    console.log("User found:", user); // Log the user object
 
     if (!user) {
-      res.status(400).json({ message: "User not found" });
-      return;
+      console.log("User not found in the database");
+      return res.status(400).json({ message: "User not found" });
     }
+
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
+    console.log("OTP generated and saved:", otp); // Log OTP generated and saved
+
     await sendOTP(email, otp);
+    console.log("OTP sent to email:", email); // Log email the OTP was sent to
 
     res
       .status(200)
       .json({ success: true, message: "OTP resent successfully!" });
   } catch (error) {
+    console.log("Error in resendOTP:", error); // Log the error
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
