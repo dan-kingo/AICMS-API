@@ -10,13 +10,17 @@ import { generateOTP, sendOTP, transporter } from "../utils/mailSender";
 
 const register = async (req: Request, res: Response) => {
   try {
-    const { userName, firstName, email, password, phoneNumber } = req.body;
+    const { userName, firstName, lastName, email, password, phoneNumber } =
+      req.body;
 
     let existingUser = await User.findOne({ $or: [{ email }, { userName }] });
     if (existingUser) {
       res.status(400).json({ message: "Email already exists!" });
       return;
     }
+
+    const isFirstThreeAccount = (await User.countDocuments()) < 3;
+
     const hashedPassword = await hashPassword(password);
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
@@ -24,11 +28,13 @@ const register = async (req: Request, res: Response) => {
     const newUser = new User({
       userName,
       firstName,
+      lastName,
       email,
       password: hashedPassword,
       phoneNumber,
       otp,
       otpExpires,
+      role: isFirstThreeAccount ? "admin" : "user",
     });
 
     await newUser.save();
