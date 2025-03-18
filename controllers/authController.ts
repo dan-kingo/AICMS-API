@@ -64,8 +64,13 @@ const verifyOTP = async (req: Request, res: Response) => {
     return;
   }
 
-  res.json({ success: true });
-  return;
+  user.isVerified = true;
+  user.otp = null;
+  user.otpExpires = null;
+
+  await user.save(); // ✅ Save the change
+
+  res.json({ success: true, message: "OTP verified successfully!" });
 };
 
 const resendOTP = async (req: Request, res: Response) => {
@@ -108,6 +113,12 @@ const login = async (req: Request, res: Response) => {
       return;
     }
 
+    if (!user.isVerified) {
+      res
+        .status(403)
+        .json({ message: "Please verify your OTP before logging in." });
+      return;
+    }
     const validPassword = await comparePassword(
       req.body.password,
       user.password

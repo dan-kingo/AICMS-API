@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     optional: true,
   },
+  isVerified: { type: Boolean, optional: true },
   resetToken: {
     type: String,
     optional: true,
