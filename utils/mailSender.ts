@@ -19,7 +19,7 @@ const sendOTP = async (email: string, otp: string) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Code",
-      text: `Your OTP code is: ${otp}. It will expire in 5 minutes.`,
+      html: `<h1>Your OTP code  is: ${otp}.</h1> It will expire in 5 minutes.`,
     });
     console.log("OTP sent successfully!");
   } catch (error) {

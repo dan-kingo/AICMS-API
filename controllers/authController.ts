@@ -193,8 +193,8 @@ const resetPassword = async (req: Request, res: Response) => {
     const hashedPassword = await hashPassword(newPassword);
 
     user.password = hashedPassword;
-    user.resetToken = undefined; // Clear the reset token
-    user.resetTokenExpires = undefined; // Clear the token expiration time
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
     await user.save();
 
     res
