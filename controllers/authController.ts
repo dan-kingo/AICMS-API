@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 dotenv.config();
 
 import User from "../models/users";
-import _ from "lodash";
 import { hashPassword, comparePassword } from "../utils/hashPassword";
 import { createJWT } from "../utils/createJWT";
 import { generateOTP, sendOTP, transporter } from "../utils/mailSender";
@@ -48,31 +47,23 @@ const register = async (req: Request, res: Response) => {
 const verifyOTP = async (req: Request, res: Response) => {
   const email = req.cookies.email;
   const { otp } = req.body;
-  console.log("Received OTP:", otp, "for Email:", email);
 
   const user = await User.findOne({ email });
   if (!user) {
-    console.log("User not found!");
     res.status(400).json({ message: "User not found" });
     return;
   }
 
-  console.log("Stored OTP:", user.otp);
-  console.log("OTP Expiry Time:", user.otpExpires);
-
   if (user.otpExpires < new Date()) {
-    console.log("OTP has expired!");
     res.status(400).json({ message: "OTP has expired" });
     return;
   }
 
   if (user.otp !== otp) {
-    console.log("Invalid OTP provided!");
     res.status(400).json({ message: "Invalid OTP" });
     return;
   }
 
-  console.log("OTP Verified Successfully!");
   res.json({ success: true });
   return;
 };
@@ -80,19 +71,15 @@ const verifyOTP = async (req: Request, res: Response) => {
 const resendOTP = async (req: Request, res: Response) => {
   try {
     const { email } = req.cookies;
-    console.log("Email from cookies:", email);
 
     if (!email) {
-      console.log("No email found in cookies");
       res.status(400).json({ message: "Email not found in cookies" });
       return;
     }
 
     const user = await User.findOne({ email });
-    console.log("User found:", user);
 
     if (!user) {
-      console.log("User not found in the database");
       res.status(400).json({ message: "User not found" });
       return;
     }
@@ -101,16 +88,13 @@ const resendOTP = async (req: Request, res: Response) => {
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
-    console.log("OTP generated and saved:", otp);
 
     await sendOTP(email, otp);
-    console.log("OTP sent to email:", email);
 
     res
       .status(200)
       .json({ success: true, message: "OTP resent successfully!" });
   } catch (error) {
-    console.log("Error in resendOTP:", error); // Log the error
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
@@ -159,7 +143,9 @@ const forgotPassword = async (req: Request, res: Response) => {
       return;
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "10m",
+    });
 
     user.resetToken = resetToken;
     user.resetTokenExpires = Date.now() + 3600000;
@@ -171,7 +157,11 @@ const forgotPassword = async (req: Request, res: Response) => {
       from: process.env.EMAIL_USER,
       to: user.email,
       subject: "Password Reset Request",
-      text: `You requested a password reset. Click the following link to reset your password: ${resetLink}`,
+      html: `<h1>Reset Your Password</h1>
+      <p>Click on the following link to reset your password:</p>
+      <a href="http://localhost:5173/reset-password/${resetToken}">${resetLink}</a>
+      <p>The link will expire in 10 minutes.</p>
+      <p>If you didn't request a password reset, please ignore this email.</p>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -180,8 +170,7 @@ const forgotPassword = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Password reset link sent!" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 };
 
@@ -204,15 +193,14 @@ const resetPassword = async (req: Request, res: Response) => {
     const hashedPassword = await hashPassword(newPassword);
 
     user.password = hashedPassword;
-    user.resetToken = undefined;
-    user.resetTokenExpires = undefined;
+    user.resetToken = undefined; // Clear the reset token
+    user.resetTokenExpires = undefined; // Clear the token expiration time
     await user.save();
 
     res
       .status(200)
       .json({ success: true, message: "Password reset successfully!" });
   } catch (error) {
-    console.error(error);
     res
       .status(500)
       .json({ success: false, message: "Error resetting password" });
@@ -229,6 +217,7 @@ const logout = async (_req: Request, res: Response) => {
     message: "Successfully logged out!",
   });
 };
+
 export {
   register,
   login,

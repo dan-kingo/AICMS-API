@@ -5,6 +5,7 @@ import {
   logout,
   register,
   resendOTP,
+  resetPassword,
   verifyOTP,
 } from "../controllers/authController";
 import { validateData } from "../middlewares/validationMiddleware";
@@ -17,5 +18,6 @@ authRouter.post("/auth/login", login);
 authRouter.post("/auth/verify-otp", verifyOTP);
 authRouter.post("/auth/resend-otp", resendOTP);
 authRouter.post("/auth/forgot-password", forgotPassword);
+authRouter.post("/auth/reset-password", resetPassword);
 authRouter.get("/auth/logout", logout);
 export default authRouter;
