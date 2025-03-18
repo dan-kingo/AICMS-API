@@ -10,7 +10,8 @@ const chatController = async (req: Request, res: Response) => {
   const { message } = req.body;
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); // Use latest model
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
     const chat = model.startChat();
     const response = await chat.sendMessage(message);
     const reply = response.response.text();
