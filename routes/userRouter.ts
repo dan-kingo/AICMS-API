@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getCurrentUser, updateUser } from "../controllers/userController";
+import {
+  deleteUser,
+  getCurrentUser,
+  updateUser,
+} from "../controllers/userController";
 import authMiddleware from "../middlewares/authMiddleware";
 import { validateData } from "../middlewares/validationMiddleware";
 import updateSchema from "../schemas/updateSchema";
@@ -13,5 +17,6 @@ userRouter.post(
   validateData(updateSchema),
   updateUser
 );
+userRouter.delete("/user/delete-user/:id", deleteUser);
 
 export default userRouter;

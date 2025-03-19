@@ -41,6 +41,7 @@ const register = async (req: Request, res: Response) => {
     await sendOTP(email, otp);
     res.cookie("email", email, {
       httpOnly: true,
+      sameSite: "none",
       secure: false,
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -138,7 +139,6 @@ const login = async (req: Request, res: Response) => {
 
       const oneDay = 1000 * 60 * 60 * 24;
       res.cookie("token", token, {
-        httpOnly: true,
         expires: new Date(Date.now() + oneDay),
         secure: process.env.NODE_ENV === "production",
       });
@@ -226,7 +226,6 @@ const resetPassword = async (req: Request, res: Response) => {
 
 const logout = async (_req: Request, res: Response) => {
   res.cookie("token", "logout", {
-    httpOnly: true,
     expires: new Date(Date.now()),
   });
   res.status(200).json({
