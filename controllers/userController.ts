@@ -65,8 +65,9 @@ const deleteUser = async (req: AuthRequest, res: Response) => {
       return;
     }
 
+    const userId = req.user.userId;
     const isAdmin = req.user.role === "admin";
-    const isOwner = req.user.userId === req.params.id;
+    const isOwner = userId === req.params.id;
 
     if (!isAdmin && !isOwner) {
       res
@@ -75,23 +76,24 @@ const deleteUser = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const userId = isAdmin ? req.params.id : req.user.userId;
-
-    const deletedUser = await User.findByIdAndDelete(userId);
-
-    if (!deletedUser) {
+    const user = await User.findById(userId);
+    if (!user) {
       res.status(404).json({ success: false, message: "User not found!" });
       return;
     }
 
+    await User.findByIdAndDelete(userId);
+
     res
       .status(200)
       .json({ success: true, message: "User account deleted successfully!" });
+    return;
   } catch (err) {
     console.error("Error in deleteUser:", err);
     res
       .status(500)
       .json({ success: false, message: "Internal server error occurred!" });
+    return;
   }
 };
 

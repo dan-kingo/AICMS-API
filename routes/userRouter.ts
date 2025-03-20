@@ -17,6 +17,6 @@ userRouter.post(
   validateData(updateSchema),
   updateUser
 );
-userRouter.delete("/user/delete-user/:id", deleteUser);
+userRouter.delete("/user/delete-user/:id", authMiddleware, deleteUser);
 
 export default userRouter;
