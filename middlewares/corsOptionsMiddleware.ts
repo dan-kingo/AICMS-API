@@ -5,6 +5,7 @@ const whitelist: string[] = [
   "http://localhost:5173",
   "https://www.google.com",
   "https://dan-kingo.netlify.app",
+  "https://eeucms.netlify.app",
 ];
 
 const corsOptions: CorsOptions = {
