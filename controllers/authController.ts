@@ -41,7 +41,7 @@ const register = async (req: Request, res: Response) => {
     await sendOTP(email, otp);
     res.cookie("email", email, {
       httpOnly: true,
-      sameSite: "none",
+
       secure: false,
       maxAge: 24 * 60 * 60 * 1000,
     });
