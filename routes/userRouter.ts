@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  changePassword,
   deleteUser,
   getCurrentUser,
   updateUser,
@@ -18,5 +19,5 @@ userRouter.post(
   updateUser
 );
 userRouter.delete("/user/delete-user/:id", authMiddleware, deleteUser);
-
+userRouter.post("/user/change-password", authMiddleware, changePassword);
 export default userRouter;
