@@ -3,6 +3,7 @@ import { CorsOptions } from "cors";
 const whitelist: string[] = [
   "http://localhost:3000",
   "http://localhost:5173",
+  "http://localhost:5174",
   "https://www.google.com",
   "https://dan-kingo.netlify.app",
   "https://eeucms.netlify.app",

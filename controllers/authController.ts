@@ -126,6 +126,7 @@ const login = async (req: Request, res: Response) => {
         .json({ message: "Please verify your OTP before logging in." });
       return;
     }
+
     const validPassword = await comparePassword(
       req.body.password,
       user.password
@@ -134,17 +135,22 @@ const login = async (req: Request, res: Response) => {
     if (!validPassword) {
       res.status(400).json({ message: "Invalid password" });
       return;
-    } else {
-      const token = createJWT({ userId: user._id.toString(), role: user.role });
-
-      const oneDay = 1000 * 60 * 60 * 24;
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + oneDay),
-        secure: process.env.NODE_ENV === "production",
-      });
-      res.status(200).json({ success: true, message: "User logged in" });
-      return;
     }
+
+    const token = createJWT({ userId: user._id.toString(), role: user.role });
+
+    const oneDay = 1000 * 60 * 60 * 24;
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + oneDay),
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User logged in",
+      token,
+      role: user.role,
+    });
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
   }
