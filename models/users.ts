@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     optional: true,
   },
+  status: {
+    type: String,
+    default: "Active",
+  },
   otpExpires: {
     type: Date,
     optional: true,

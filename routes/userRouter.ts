@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   changePassword,
   deleteUser,
+  getAllUsers,
   getCurrentUser,
   updateUser,
 } from "../controllers/userController";
@@ -11,6 +12,7 @@ import updateSchema from "../schemas/updateSchema";
 
 const userRouter = Router();
 
+userRouter.get("/users", getAllUsers);
 userRouter.get("/user/current-user", authMiddleware, getCurrentUser);
 userRouter.post(
   "/user/update-user",

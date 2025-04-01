@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import _ from "lodash";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import User from "../models/users";
@@ -136,4 +136,14 @@ const changePassword = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { getCurrentUser, updateUser, deleteUser, changePassword };
+const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await User.find({}, "-password");
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export { getCurrentUser, getAllUsers, updateUser, deleteUser, changePassword };
