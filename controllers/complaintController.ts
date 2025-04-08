@@ -4,7 +4,7 @@ import Complaint from "../models/complaint";
 import axios from "axios";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
-  const { complaint } = req.body as { complaint: string };
+  const { complaint } = req.body;
   const userId = req.user.userId;
 
   if (!complaint) {
@@ -19,10 +19,25 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
 
     const predictedCategory = aiResponse.data.category;
 
+    let assignedTo: string;
+
+    switch (predictedCategory) {
+      case "Supply":
+        assignedTo = "Distribution Supervisor";
+        break;
+      case "Employee":
+        assignedTo = "General Manager";
+        break;
+      default:
+        assignedTo = "Customer Service Supervisor";
+        break;
+    }
+
     const newComplaint = await Complaint.create({
       user: userId,
       complaint,
       category: predictedCategory,
+      assignedTo,
     });
 
     res.status(201).json(newComplaint);

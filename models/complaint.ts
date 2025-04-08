@@ -6,6 +6,7 @@ export interface IComplaint extends Document {
   category: string;
   status: string;
   createdAt: Date;
+  assignedTo: string;
 }
 
 const ComplaintSchema = new Schema<IComplaint>(
@@ -13,6 +14,7 @@ const ComplaintSchema = new Schema<IComplaint>(
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     complaint: { type: String, required: true },
     category: { type: String, required: true },
+    assignedTo: { type: String, required: true },
     status: { type: String, default: "Pending" },
   },
   { timestamps: true }
