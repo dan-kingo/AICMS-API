@@ -13,6 +13,7 @@ import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
 import chatRouter from "./routes/chatRouter";
 import predictRouter from "./routes/predictRouter";
+import complaintRouter from "./routes/complaintRouter";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.use("/api", authRouter);
 app.use("/api", userRouter);
 app.use("/api", chatRouter);
 app.use("/api", predictRouter);
+app.use("/api", complaintRouter);
 
 app.listen(PORT, () => {
   appDebug(`server started at port ${PORT}`);
