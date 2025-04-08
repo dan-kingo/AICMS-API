@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
 import chatRouter from "./routes/chatRouter";
+import predictRouter from "./routes/predictRouter";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ mongoose
 app.use("/api", authRouter);
 app.use("/api", userRouter);
 app.use("/api", chatRouter);
+app.use("/api", predictRouter);
 
 app.listen(PORT, () => {
   appDebug(`server started at port ${PORT}`);
