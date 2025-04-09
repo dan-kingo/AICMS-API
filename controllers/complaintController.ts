@@ -4,17 +4,17 @@ import Complaint from "../models/complaint";
 import axios from "axios";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
-  const { complaint } = req.body;
+  const { description } = req.body;
   const userId = req.user.userId;
 
-  if (!complaint) {
+  if (!description) {
     res.status(400).json({ error: "Complaint text is required" });
     return;
   }
 
   try {
     const aiResponse = await axios.post("http://127.0.0.1:8000/predict", {
-      text: complaint,
+      description,
     });
 
     const predictedCategory = aiResponse.data.category;
@@ -35,7 +35,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
 
     const newComplaint = await Complaint.create({
       user: userId,
-      complaint,
+      description,
       category: predictedCategory,
       assignedTo,
     });
