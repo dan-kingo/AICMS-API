@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
-import Complaint from "../models/complaint";
+import Complaint, { IComplaint } from "../models/complaint";
 import axios from "axios";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
@@ -60,4 +60,36 @@ const getUserComplaints = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { getUserComplaints, createComplaint };
+const getAllComplaints = async (req: AuthRequest, res: Response) => {
+  const { role } = req.user;
+
+  try {
+    let complaints: IComplaint[] = [];
+
+    if (role === "General Manager") {
+      complaints = await Complaint.find().sort({ createdAt: -1 });
+    } else if (role === "Distribution Supervisor") {
+      complaints = await Complaint.find({
+        assignedTo: "Distribution Supervisor",
+      }).sort({
+        createdAt: -1,
+      });
+    } else if (role === "Customer Service Supervisor") {
+      complaints = await Complaint.find({
+        assignedTo: "Customer Service Supervisor",
+      }).sort({
+        createdAt: -1,
+      });
+    } else {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+
+    res.status(200).json(complaints);
+  } catch (error) {
+    console.error("Error fetching complaints:", error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export { getUserComplaints, createComplaint, getAllComplaints };
