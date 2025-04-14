@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import Complaint, { IComplaint } from "../models/complaint";
 import axios from "axios";
@@ -92,4 +92,72 @@ const getAllComplaints = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { getUserComplaints, createComplaint, getAllComplaints };
+const resolveComplaint = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!["In Progress", "Resolved"].includes(status)) {
+    res.status(400).json({ message: "Invalid status value" });
+    return;
+  }
+
+  try {
+    const updatedComplaint = await Complaint.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedComplaint) {
+      res.status(404).json({ message: "Complaint not found" });
+      return;
+    }
+
+    res.status(200).json(updatedComplaint);
+  } catch (error) {
+    res.status(500).json({ message: "Error resolving complaint", error });
+  }
+};
+
+const escalateComplaint = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const complaint = await Complaint.findById(id);
+
+    if (!complaint) {
+      res.status(404).json({ message: "Complaint not found" });
+      return;
+    }
+
+    let newAssignee = "";
+    switch (complaint.assignedTo) {
+      case "Customer Service Supervisor":
+        newAssignee = "Distribution Supervisor";
+        break;
+      case "Distribution Supervisor":
+        newAssignee = "General Manager";
+        break;
+      case "General Manager":
+        res.status(400).json({ message: "Already at top level" });
+        break;
+      default:
+        res.status(400).json({ message: "Unknown current assignee" });
+        return;
+    }
+
+    complaint.assignedTo = newAssignee;
+    await complaint.save();
+
+    res.status(200).json({ message: "Complaint escalated", complaint });
+  } catch (error) {
+    res.status(500).json({ message: "Error escalating complaint", error });
+  }
+};
+export {
+  getUserComplaints,
+  createComplaint,
+  getAllComplaints,
+  resolveComplaint,
+  escalateComplaint,
+};
