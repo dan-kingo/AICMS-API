@@ -14,8 +14,8 @@ const userRouter = Router();
 
 userRouter.get("/users", getAllUsers);
 userRouter.get("/user/current-user", authMiddleware, getCurrentUser);
-userRouter.post(
-  "/user/update-user",
+userRouter.put(
+  "/user/update-user/:id",
   authMiddleware,
   validateData(updateSchema),
   updateUser
