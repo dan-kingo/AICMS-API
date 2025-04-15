@@ -33,6 +33,8 @@ mongoose
   .then(() => dbDebug("connected to database!"))
   .catch((err) => dbDebug(err));
 
+app.use("/uploads", express.static("uploads"));
+
 //routes
 app.use("/api", authRouter);
 app.use("/api", userRouter);
