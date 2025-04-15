@@ -6,6 +6,7 @@ import axios from "axios";
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;
   const userId = req.user.userId;
+  const file = req.file as Express.Multer.File | undefined;
 
   if (!description) {
     res.status(400).json({ error: "Complaint text is required" });
@@ -38,6 +39,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
       description,
       category: predictedCategory,
       assignedTo,
+      supportingFile: file?.filename,
     });
 
     res.status(201).json(newComplaint);

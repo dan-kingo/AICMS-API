@@ -7,10 +7,16 @@ import {
   getUserComplaints,
   resolveComplaint,
 } from "../controllers/complaintController";
+import upload from "../middlewares/multerMiddleware";
 
 const complaintRouter = Router();
 
-complaintRouter.post("/complaints", authMiddleware, createComplaint);
+complaintRouter.post(
+  "/complaints",
+  authMiddleware,
+  upload.single("supportingFile"),
+  createComplaint
+);
 complaintRouter.put(
   "/complaints/:id/resolve",
   authMiddleware,

@@ -7,6 +7,10 @@ export interface IComplaint extends Document {
   status: string;
   createdAt: Date;
   assignedTo: string;
+  supportingFile: {
+    type: string;
+    required: false;
+  };
 }
 
 const ComplaintSchema = new Schema<IComplaint>(
