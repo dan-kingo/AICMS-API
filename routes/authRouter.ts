@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  adminLogin,
   forgotPassword,
   login,
   logout,
@@ -15,6 +16,7 @@ const authRouter = Router();
 
 authRouter.post("/auth/register", validateData(registerSchema), register);
 authRouter.post("/auth/login", login);
+authRouter.post("/auth/admin-login", adminLogin);
 authRouter.post("/auth/verify-otp", verifyOTP);
 authRouter.post("/auth/resend-otp", resendOTP);
 authRouter.post("/auth/forgot-password", forgotPassword);
