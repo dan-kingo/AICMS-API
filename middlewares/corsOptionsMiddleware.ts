@@ -8,6 +8,8 @@ const whitelist: string[] = [
   "http://127.0.0.1:8000",
   "https://dan-kingo.netlify.app",
   "https://eeucms.netlify.app",
+  "https://eeucms-admin.netlify.app",
+  "https://complaint-ai.onrender.com",
 ];
 
 const corsOptions: CorsOptions = {

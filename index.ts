@@ -29,7 +29,7 @@ app.use(cookieParser());
 
 // connect to database
 mongoose
-  .connect("mongodb://localhost/AICMS")
+  .connect(process.env.MONGODB_URL)
   .then(() => dbDebug("connected to database!"))
   .catch((err) => dbDebug(err));
 

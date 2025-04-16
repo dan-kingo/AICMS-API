@@ -14,9 +14,12 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const aiResponse = await axios.post("http://127.0.0.1:8000/predict", {
-      description,
-    });
+    const aiResponse = await axios.post(
+      "https://complaint-ai.onrender.com/predict",
+      {
+        description,
+      }
+    );
 
     const predictedCategory = aiResponse.data.category;
 
