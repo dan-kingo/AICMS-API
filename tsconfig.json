@@ -3,9 +3,9 @@
     // Treat files as modules even if it doesn't use import/export
     "moduleDetection": "force",
 
-    "target": "ES2015",
-    // Ignore module structure
-    "module": "Preserve",
+    "target": "ES2017",
+    "module": "CommonJS", // or "ESNext" if you're using ESM
+    "outDir": "./dist",
 
     // Allow JSON modules to be imported
     "resolveJsonModule": true,

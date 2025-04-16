@@ -3,7 +3,8 @@ services:
     name: express-backend
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node --max-old-space-size=4096 dist/index.js
+
     envVars:
       - key: NODE_ENV
         value: production
