@@ -1,5 +1,4 @@
 import express, { Express } from "express";
-import morgan from "morgan";
 import cors from "cors";
 import debug from "debug";
 import cookieParser from "cookie-parser";
@@ -14,6 +13,7 @@ import userRouter from "./routes/userRouter";
 import chatRouter from "./routes/chatRouter";
 import predictRouter from "./routes/predictRouter";
 import complaintRouter from "./routes/complaintRouter";
+import morgan from "morgan";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;

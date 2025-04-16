@@ -5,7 +5,7 @@
 
     "target": "ES2015",
     // Ignore module structure
-    "module": "Preserve",
+    "module": "CommonJS",
 
     // Allow JSON modules to be imported
     "resolveJsonModule": true,
