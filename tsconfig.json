@@ -3,6 +3,7 @@
     // Treat files as modules even if it doesn't use import/export
     "moduleDetection": "force",
 
+    "target": "ES2015",
     // Ignore module structure
     "module": "Preserve",
 
