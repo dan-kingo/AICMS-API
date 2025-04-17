@@ -1,7 +1,8 @@
 import { Response, Request } from "express";
-import { AuthRequest } from "../middlewares/authMiddleware";
-import Complaint, { IComplaint } from "../models/complaint";
 import axios from "axios";
+
+import { AuthRequest } from "../middlewares/authMiddleware.js";
+import Complaint, { IComplaint } from "../models/complaint.js";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;

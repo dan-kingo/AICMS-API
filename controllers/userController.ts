@@ -1,8 +1,8 @@
 import { Response, Request } from "express";
 import _ from "lodash";
-import { AuthRequest } from "../middlewares/authMiddleware";
-import User from "../models/users";
-import { comparePassword, hashPassword } from "../utils/hashPassword";
+import { AuthRequest } from "../middlewares/authMiddleware.js";
+import User from "../models/users.js";
+import { comparePassword, hashPassword } from "../utils/hashPassword.js";
 
 interface ChangePasswordRequestBody {
   currentPassword: string;

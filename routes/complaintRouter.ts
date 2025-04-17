@@ -1,13 +1,13 @@
 import { Router } from "express";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/authMiddleware.js";
 import {
   createComplaint,
   escalateComplaint,
   getAllComplaints,
   getUserComplaints,
   resolveComplaint,
-} from "../controllers/complaintController";
-import upload from "../middlewares/multerMiddleware";
+} from "../controllers/complaintController.js";
+import upload from "../middlewares/multerMiddleware.js";
 
 const complaintRouter = Router();
 

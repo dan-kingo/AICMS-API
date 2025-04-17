@@ -5,14 +5,16 @@ import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import accessLogStream from "./middlewares/loggerMiddleware";
-import corsOptions from "./middlewares/corsOptionsMiddleware";
+import accessLogStream from "./middlewares/loggerMiddleware.js";
+import corsOptions from "./middlewares/corsOptionsMiddleware.js";
+import authRouter from "./routes/authRouter.js";
+import userRouter from "./routes/userRouter.js";
+import chatRouter from "./routes/chatRouter.js";
+import predictRouter from "./routes/predictRouter.js";
+import complaintRouter from "./routes/complaintRouter.js";
+
 import mongoose from "mongoose";
-import authRouter from "./routes/authRouter";
-import userRouter from "./routes/userRouter";
-import chatRouter from "./routes/chatRouter";
-import predictRouter from "./routes/predictRouter";
-import complaintRouter from "./routes/complaintRouter";
+
 import morgan from "morgan";
 
 const app: Express = express();

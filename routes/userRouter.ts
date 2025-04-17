@@ -5,10 +5,10 @@ import {
   getAllUsers,
   getCurrentUser,
   updateUser,
-} from "../controllers/userController";
-import authMiddleware from "../middlewares/authMiddleware";
-import { validateData } from "../middlewares/validationMiddleware";
-import updateSchema from "../schemas/updateSchema";
+} from "../controllers/userController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import { validateData } from "../middlewares/validationMiddleware.js";
+import updateSchema from "../schemas/updateSchema.js";
 
 const userRouter = Router();
 

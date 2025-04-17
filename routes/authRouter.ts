@@ -8,9 +8,9 @@ import {
   resendOTP,
   resetPassword,
   verifyOTP,
-} from "../controllers/authController";
-import { validateData } from "../middlewares/validationMiddleware";
-import registerSchema from "../schemas/registerSchema";
+} from "../controllers/authController.js";
+import { validateData } from "../middlewares/validationMiddleware.js";
+import registerSchema from "../schemas/registerSchema.js";
 
 const authRouter = Router();
 

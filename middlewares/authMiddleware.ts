@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyJWT } from "../utils/createJWT";
+import { verifyJWT } from "../utils/createJWT.js";
 
 export interface AuthRequest extends Request {
   user?: {

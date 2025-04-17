@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import User from "../models/users";
-import { hashPassword, comparePassword } from "../utils/hashPassword";
-import { createJWT } from "../utils/createJWT";
-import { generateOTP, sendOTP, transporter } from "../utils/mailSender";
+import User from "../models/users.js";
+import { hashPassword, comparePassword } from "../utils/hashPassword.js";
+import { createJWT } from "../utils/createJWT.js";
+import { generateOTP, sendOTP, transporter } from "../utils/mailSender.js";
 
 const register = async (req: Request, res: Response) => {
   try {
