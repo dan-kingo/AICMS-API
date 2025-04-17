@@ -12,8 +12,8 @@ interface ChangePasswordRequestBody {
 
 const getCurrentUser = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await User.findOne({ _id: req.user.userId });
-    const safeUser = _.omit(user.toObject(), ["password"]);
+    const user = await User.findOne({ _id: req.user?.userId });
+    const safeUser = _.omit(user!.toObject(), ["password"]);
     res.status(200).json({
       success: true,
       user: safeUser,
@@ -108,14 +108,14 @@ const changePassword = async (req: AuthRequest, res: Response) => {
   const { currentPassword, newPassword }: ChangePasswordRequestBody = req.body;
 
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user?.userId);
 
     if (!user) {
       res.status(404).json({ message: "User not found." });
       return;
     }
 
-    const match = await comparePassword(currentPassword, user.password);
+    const match = await comparePassword(currentPassword, user.password!);
 
     if (!match) {
       res.status(401).json({ message: "Incorrect current password." });
