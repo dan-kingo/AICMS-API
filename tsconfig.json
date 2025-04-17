@@ -1,24 +1,18 @@
 {
   "compilerOptions": {
-    // Treat files as modules even if it doesn't use import/export
-    "moduleDetection": "force",
-
-    "target": "ES2017",
-    "module": "CommonJS", // or "ESNext" if you're using ESM
-    "outDir": "./dist",
-
-    // Allow JSON modules to be imported
-    "resolveJsonModule": true,
-
-    // Allow JS files to be imported from TS and vice versa
-    "allowJs": true,
-
-    // Use correct ESM import behavior
+    "target": "ES2020",
+    "module": "ES2022",
+    "outDir": "dist",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-
-    // Disallow features that require cross-file awareness
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
-  }
+  },
+  "include": ["*.ts", "**/*.ts"]
 }

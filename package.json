@@ -12,6 +12,7 @@
     "typescript": "^5.8.2"
   },
   "name": "server",
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
@@ -38,8 +39,9 @@
     "zod": "^3.24.2"
   },
   "scripts": {
+    "dev": "tsx watch index.ts",
     "build": "tsc",
-    "start": "tsx watch index.ts"
+    "start": "node --max-old-space-size=4096 dist/index.js"
   },
   "keywords": [],
   "author": "",
