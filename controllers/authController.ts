@@ -161,6 +161,7 @@ const adminLogin = async (req: Request, res: Response) => {
       role: user.role,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
