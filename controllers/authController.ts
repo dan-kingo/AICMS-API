@@ -61,7 +61,7 @@ const verifyOTP = async (req: Request, res: Response) => {
     return;
   }
 
-  if (user.otpExpires < new Date()) {
+  if (!user.otpExpires || user.otpExpires < new Date()) {
     res.status(400).json({ message: "OTP has expired" });
     return;
   }
@@ -115,12 +115,12 @@ const adminLogin = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ userName: req.body.userName });
 
-    if (user.role === "user") {
-      res.status(400).json({ message: "Invalid User!" });
-      return;
-    }
     if (!user) {
       res.status(400).json({ message: "Invalid Username!" });
+      return;
+    }
+    if (user.role === "user") {
+      res.status(400).json({ message: "Invalid User!" });
       return;
     }
 
@@ -128,6 +128,11 @@ const adminLogin = async (req: Request, res: Response) => {
       res
         .status(403)
         .json({ message: "Please verify your OTP before logging in." });
+      return;
+    }
+
+    if (!user?.password) {
+      res.status(400).json({ message: "Invalid Password!" });
       return;
     }
 
@@ -163,12 +168,13 @@ const login = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ userName: req.body.userName });
 
-    if (user.role !== "user") {
-      res.status(400).json({ message: "Invalid User!" });
-      return;
-    }
     if (!user) {
       res.status(400).json({ message: "Invalid Username!" });
+      return;
+    }
+
+    if (user.role !== "user") {
+      res.status(400).json({ message: "Invalid User!" });
       return;
     }
 
@@ -176,6 +182,10 @@ const login = async (req: Request, res: Response) => {
       res
         .status(403)
         .json({ message: "Please verify your OTP before logging in." });
+      return;
+    }
+    if (!user?.password) {
+      res.status(400).json({ message: "Invalid Password!" });
       return;
     }
 
@@ -218,7 +228,7 @@ const forgotPassword = async (req: Request, res: Response) => {
       return;
     }
 
-    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "10m",
     });
 
@@ -230,11 +240,11 @@ const forgotPassword = async (req: Request, res: Response) => {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: user.email,
+      to: user.email || "kabebe1123@gmail.com",
       subject: "Password Reset Request",
       html: `<h1>Reset Your Password</h1>
       <p>Click on the following link to reset your password:</p>
-      <a href="http://localhost:5173/reset-password/${resetToken}">${resetLink}</a>
+      <a href="https://eeucms.netlify.app/reset-password/${resetToken}">${resetLink}</a>
       <p>The link will expire in 10 minutes.</p>
       <p>If you didn't request a password reset, please ignore this email.</p>`,
     };

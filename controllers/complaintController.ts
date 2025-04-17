@@ -5,7 +5,7 @@ import axios from "axios";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;
-  const userId = req.user.userId;
+  const userId = req.user?.userId;
   const file = req.file as Express.Multer.File | undefined;
 
   if (!description) {
@@ -52,7 +52,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
   }
 };
 const getUserComplaints = async (req: AuthRequest, res: Response) => {
-  const userId = req.user.userId;
+  const userId = req.user?.userId;
 
   try {
     const complaints = await Complaint.find({ user: userId }).sort({
@@ -66,7 +66,7 @@ const getUserComplaints = async (req: AuthRequest, res: Response) => {
 };
 
 const getAllComplaints = async (req: AuthRequest, res: Response) => {
-  const { role } = req.user;
+  const role = req.user?.role;
 
   try {
     let complaints: IComplaint[] = [];
