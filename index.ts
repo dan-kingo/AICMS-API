@@ -30,8 +30,11 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 
 // connect to database
+if (!process.env.MONGODB_URL) {
+  throw new Error("there is no connection string!");
+}
 mongoose
-  .connect(process.env.MONGODB_URL!)
+  .connect(process.env.MONGODB_URL)
   .then(() => dbDebug("connected to database!"))
   .catch((err) => dbDebug(err));
 
