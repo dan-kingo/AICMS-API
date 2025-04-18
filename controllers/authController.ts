@@ -80,7 +80,8 @@ const verifyOTP = async (req: Request, res: Response) => {
     const email = req.cookies.email;
     const { otp } = req.body;
 
-    console.log("[VERIFY OTP] Email:", email);
+    console.log("[VERIFY OTP] Email from cookie:", email);
+    console.log("[VERIFY OTP] Provided OTP:", otp);
 
     if (!email || !otp) {
       res.status(400).json({ message: "Email and OTP are required" });
@@ -99,8 +100,10 @@ const verifyOTP = async (req: Request, res: Response) => {
       return;
     }
 
-    if (user.otp !== otp) {
-      res.status(400).json({ message: "Invalid OTP" });
+    console.log("[VERIFY OTP] Stored OTP:", user.otp);
+
+    if (user.otp !== otp.toString()) {
+      res.status(400).json({ message: "Invalid OTP, please try again." });
       return;
     }
 
@@ -109,7 +112,7 @@ const verifyOTP = async (req: Request, res: Response) => {
     user.otpExpires = null;
     await user.save();
 
-    console.log("[VERIFY OTP] OTP verified for user:", email);
+    console.log("[VERIFY OTP] OTP verified for:", email);
 
     res.json({ success: true, message: "OTP verified successfully!" });
     return;
@@ -124,32 +127,40 @@ const verifyOTP = async (req: Request, res: Response) => {
 
 const resendOTP = async (req: Request, res: Response) => {
   try {
-    const { email } = req.cookies;
+    const email = req.cookies.email;
+    console.log("[RESEND OTP] Email from cookie:", email);
 
     if (!email) {
-      res.status(400).json({ message: "Email not found in cookies" });
+      res.status(400).json({ message: "Email not found in cookies." });
       return;
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(400).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
 
-    const otp = generateOTP();
-    user.otp = otp;
+    const newOTP = generateOTP();
+    user.otp = newOTP;
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
 
-    await sendOTP(email, otp);
+    await sendOTP(email, newOTP);
+    console.log("[RESEND OTP] New OTP sent to:", email);
 
+    res.json({
+      success: true,
+      message: "A new OTP has been sent to your email.",
+    });
+    return;
+  } catch (error: any) {
+    console.error("[RESEND OTP] Error:", error.message);
     res
-      .status(200)
-      .json({ success: true, message: "OTP resent successfully!" });
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error });
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+    return;
   }
 };
 
