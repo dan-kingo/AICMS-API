@@ -13,17 +13,32 @@ const register = async (req: Request, res: Response) => {
     const { userName, firstName, lastName, email, password, phoneNumber } =
       req.body;
 
-    let existingUser = await User.findOne({ $or: [{ email }, { userName }] });
+    console.log("[REGISTER] Incoming registration request for:", email);
+
+    if (
+      !userName ||
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !phoneNumber
+    ) {
+      console.warn("[REGISTER] Missing required fields");
+      res.status(400).json({ message: "All fields are required." });
+      return;
+    }
+
+    const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
     if (existingUser) {
-      res.status(400).json({ message: "Email already exists!" });
+      console.warn("[REGISTER] User already exists:", email);
+      res.status(400).json({ message: "Email or username already exists!" });
       return;
     }
 
     const isFirstThreeAccount = (await User.countDocuments()) < 3;
-
     const hashedPassword = await hashPassword(password);
     const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 min
 
     const newUser = new User({
       userName,
@@ -38,46 +53,73 @@ const register = async (req: Request, res: Response) => {
     });
 
     await newUser.save();
+    console.log("[REGISTER] User saved successfully:", email);
+
     await sendOTP(email, otp);
+    console.log("[REGISTER] OTP sent to:", email);
+
     res.cookie("email", email, {
       httpOnly: true,
-
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
     });
+
     res.status(201).json({ success: true, message: "OTP sent to your email." });
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error });
+    return;
+  } catch (error: any) {
+    console.error("[REGISTER] Error:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+    return;
   }
 };
 
 const verifyOTP = async (req: Request, res: Response) => {
-  const email = req.cookies.email;
-  const { otp } = req.body;
+  try {
+    const email = req.cookies.email;
+    const { otp } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) {
-    res.status(400).json({ message: "User not found" });
+    console.log("[VERIFY OTP] Email:", email);
+
+    if (!email || !otp) {
+      res.status(400).json({ message: "Email and OTP are required" });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    if (!user.otpExpires || user.otpExpires < new Date()) {
+      res.status(400).json({ message: "OTP has expired" });
+      return;
+    }
+
+    if (user.otp !== otp) {
+      res.status(400).json({ message: "Invalid OTP" });
+      return;
+    }
+
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    console.log("[VERIFY OTP] OTP verified for user:", email);
+
+    res.json({ success: true, message: "OTP verified successfully!" });
+    return;
+  } catch (error: any) {
+    console.error("[VERIFY OTP] Error:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
     return;
   }
-
-  if (!user.otpExpires || user.otpExpires < new Date()) {
-    res.status(400).json({ message: "OTP has expired" });
-    return;
-  }
-
-  if (user.otp !== otp) {
-    res.status(400).json({ message: "Invalid OTP" });
-    return;
-  }
-
-  user.isVerified = true;
-  user.otp = null;
-  user.otpExpires = null;
-
-  await user.save(); // ✅ Save the change
-
-  res.json({ success: true, message: "OTP verified successfully!" });
 };
 
 const resendOTP = async (req: Request, res: Response) => {
