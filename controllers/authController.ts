@@ -62,6 +62,7 @@ const register = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none",
     });
 
     res.status(201).json({ success: true, message: "OTP sent to your email." });
@@ -205,6 +206,7 @@ const adminLogin = async (req: Request, res: Response) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + oneDay),
       secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
     });
 
     res.status(200).json({
@@ -259,6 +261,7 @@ const login = async (req: Request, res: Response) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + oneDay),
       secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
     });
 
     res.status(200).json({
@@ -349,6 +352,8 @@ const resetPassword = async (req: Request, res: Response) => {
 const logout = async (_req: Request, res: Response) => {
   res.cookie("token", "logout", {
     expires: new Date(Date.now()),
+    sameSite: "none",
+    httpOnly: true,
   });
   res.status(200).json({
     success: true,
