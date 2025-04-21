@@ -6,7 +6,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import accessLogStream from "./middlewares/loggerMiddleware.js";
-import corsOptions from "./middlewares/corsOptionsMiddleware.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
 import chatRouter from "./routes/chatRouter.js";
@@ -32,7 +31,7 @@ app.use(
       "https://eeucms.netlify.app",
       "https://eeucms-admin.netlify.app",
       "https://eeucms-admin.onrender.com",
-      "https://eeucms.onrender.com"
+      "https://eeucms.onrender.com",
     ],
     credentials: true,
   })
