@@ -7,10 +7,11 @@ const whitelist: string[] = [
   "http://localhost:5174",
   "https://www.google.com",
   "http://127.0.0.1:8000",
-  "https://dan-kingo.netlify.app",
   "https://eeucms.netlify.app",
   "https://eeucms-admin.netlify.app",
   "https://complaint-ai.onrender.com",
+  "https://eeucms.onrender.com",
+  "https://eeucms-admin.onrender.com",
 ];
 
 const corsOptions: CorsOptions = {

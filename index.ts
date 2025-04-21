@@ -15,6 +15,7 @@ import complaintRouter from "./routes/complaintRouter.js";
 import mongoose from "mongoose";
 
 import morgan from "morgan";
+import corsOptions from "./middlewares/corsOptionsMiddleware.js";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -25,17 +26,7 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined", { stream: accessLogStream }));
 }
-app.use(
-  cors({
-    origin: [
-      "https://eeucms.netlify.app",
-      "https://eeucms-admin.netlify.app",
-      "https://eeucms-admin.onrender.com",
-      "https://eeucms.onrender.com",
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 

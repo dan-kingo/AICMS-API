@@ -60,7 +60,7 @@ const register = async (req: Request, res: Response) => {
 
     res.cookie("email", email, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "none",
     });
@@ -205,7 +205,7 @@ const adminLogin = async (req: Request, res: Response) => {
     const oneDay = 1000 * 60 * 60 * 24;
     res.cookie("token", token, {
       expires: new Date(Date.now() + oneDay),
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
     });
 
@@ -260,7 +260,7 @@ const login = async (req: Request, res: Response) => {
     const oneDay = 1000 * 60 * 60 * 24;
     res.cookie("token", token, {
       expires: new Date(Date.now() + oneDay),
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
     });
 
