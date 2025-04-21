@@ -26,7 +26,18 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined", { stream: accessLogStream }));
 }
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: [
+      "https://eeucms.netlify.app",
+      "https://eeucms-admin.netlify.app",
+      "https://eeucms-admin.onrender.com",
+      "https://eeucms.onrender.com"
+    ],
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 
 // connect to database
