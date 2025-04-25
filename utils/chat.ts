@@ -1,3 +1,7 @@
+import natural from "natural";
+const tokenizer = new natural.WordTokenizer();
+const stemmer = natural.PorterStemmer;
+
 const allowed = [
   "complaint",
   "submit complaint",
@@ -49,7 +53,8 @@ const allowed = [
   "view complaints",
   "track my issue",
   "resolve my case",
-];
+].map(stemmer.stem);
+
 const greetings = [
   "hi",
   "hello",
@@ -103,4 +108,12 @@ const SYSTEM_PROMPT = `
   "I'm here to assist only with EEU Complaint Management System-related queries."
   `;
 
-export { SYSTEM_PROMPT, allowed, greetings };
+const isRelevant = (message: string): boolean => {
+  const lower = message.toLowerCase();
+
+  if (greetings.some((g) => lower.includes(g))) return true;
+  const tokens = tokenizer.tokenize(lower).map(stemmer.stem);
+  return tokens.some((token) => allowed.includes(token));
+};
+
+export { SYSTEM_PROMPT, isRelevant };

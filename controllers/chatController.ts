@@ -1,19 +1,10 @@
 import { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from "dotenv";
-import { allowed, greetings, SYSTEM_PROMPT } from "../utils/chat.js";
+import { isRelevant, SYSTEM_PROMPT } from "../utils/chat.js";
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-
-const isRelevant = (message: string): boolean => {
-  const lower = message.toLowerCase();
-
-  return (
-    greetings.some((g) => lower.includes(g)) ||
-    allowed.some((k) => lower.includes(k))
-  );
-};
 
 const chatController = async (req: Request, res: Response) => {
   const { message } = req.body;
