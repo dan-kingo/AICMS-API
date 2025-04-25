@@ -74,19 +74,12 @@ const chatController = async (req: Request, res: Response) => {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash", // ✅ Corrected
+      model: "tunedModels/faqdataextended-3zwmtoin5v5t", // ✅ Corrected
     });
 
-    const chat = model.startChat({
-      history: [
-        {
-          role: "system",
-          parts: [{ text: SYSTEM_PROMPT }],
-        },
-      ],
-    });
-
-    const response = await chat.sendMessage(message);
+    const response = await model.generateContent(
+      `${SYSTEM_PROMPT}\n\nUser: ${message}`
+    );
     const reply = response.response.text();
 
     res.json({ reply });
