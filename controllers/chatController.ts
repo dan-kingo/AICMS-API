@@ -74,7 +74,7 @@ const chatController = async (req: Request, res: Response) => {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: "tunedModels/faqdataextended-3zwmtoin5v5t", // ✅ Corrected
+      model: "gemini-1.5-flash", // ✅ Corrected
     });
 
     const chat = model.startChat({
