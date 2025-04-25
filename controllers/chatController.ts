@@ -1,54 +1,13 @@
 import { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from "dotenv";
+import { allowed, greetings, SYSTEM_PROMPT } from "../utils/chat";
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
-const SYSTEM_PROMPT = `
-You are a helpful assistant for the EEU AI-Assisted Complaint Management System (AICMS).
-Only answer questions related to complaint submission, tracking, escalation, resolution, file uploads, login, registration, user roles, and system features.
-Greet users politely if they say "Hi", "Hello", "Good morning", etc.
-If asked anything outside these topics, respond with:
-"I'm here to assist only with EEU Complaint Management System-related queries."
-`;
-
 const isRelevant = (message: string): boolean => {
   const lower = message.toLowerCase();
-  const allowed = [
-    "complaint",
-    "submit",
-    "track",
-    "status",
-    "resolve",
-    "escalate",
-    "ai",
-    "system",
-    "eeu",
-    "file",
-    "upload",
-    "login",
-    "register",
-    "password",
-    "role",
-    "user",
-    "profile",
-    "account",
-    "reset",
-    "forgot",
-  ];
-
-  const greetings = [
-    "hi",
-    "hello",
-    "good morning",
-    "good afternoon",
-    "hey",
-    "how are you",
-    "good evening",
-    "hey there",
-    "hi there",
-  ];
 
   return (
     greetings.some((g) => lower.includes(g)) ||
