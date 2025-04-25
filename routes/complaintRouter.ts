@@ -7,14 +7,14 @@ import {
   getUserComplaints,
   resolveComplaint,
 } from "../controllers/complaintController.js";
-import upload from "../middlewares/multerMiddleware.js";
+import cloudinaryUpload from "../middlewares/multerMiddleware.js";
 
 const complaintRouter = Router();
 
 complaintRouter.post(
   "/complaints",
   authMiddleware,
-  upload.single("supportingFile"),
+  cloudinaryUpload.single("supportingFile"),
   createComplaint
 );
 complaintRouter.put(

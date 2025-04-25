@@ -7,7 +7,7 @@ import Complaint, { IComplaint } from "../models/complaint.js";
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;
   const userId = req.user?.userId;
-  const file = req.file;
+  const fileUrl = req.file?.path || null;
 
   if (!description) {
     res.status(400).json({ error: "Complaint text is required" });
@@ -31,7 +31,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
       description,
       category: predictedCategory,
       assignedTo,
-      supportingFile: file?.filename || null,
+      supportingFile: fileUrl,
     });
 
     res.status(201).json(newComplaint);

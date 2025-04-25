@@ -17,7 +17,7 @@ const ComplaintSchema = new Schema<IComplaint>(
     category: { type: String, required: true },
     assignedTo: { type: String, required: true },
     status: { type: String, default: "Pending" },
-    supportingFile: { type: String, required: false }, // ✅ Now properly added
+    supportingFile: { type: String, required: false },
   },
   { timestamps: true }
 );
