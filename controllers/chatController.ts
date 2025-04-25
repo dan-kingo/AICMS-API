@@ -34,6 +34,8 @@ const isRelevant = (message: string): boolean => {
     "user",
     "profile",
     "account",
+    "reset",
+    "forgot",
   ];
 
   const greetings = [
@@ -41,9 +43,11 @@ const isRelevant = (message: string): boolean => {
     "hello",
     "good morning",
     "good afternoon",
-    "good afternoon",
     "hey",
     "how are you",
+    "good evening",
+    "hey there",
+    "hi there",
   ];
 
   return (
@@ -70,7 +74,7 @@ const chatController = async (req: Request, res: Response) => {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: " tunedModels/faqdataextended-3zwmtoin5v5t",
+      model: "tunedModels/faqdataextended-3zwmtoin5v5t", // ✅ Corrected
     });
 
     const chat = model.startChat({
@@ -86,8 +90,11 @@ const chatController = async (req: Request, res: Response) => {
     const reply = response.response.text();
 
     res.json({ reply });
-  } catch (error) {
-    console.error("Error calling Gemini:", error);
+  } catch (error: any) {
+    console.error(
+      "Error calling Gemini:",
+      error.response?.data || error.message || error
+    );
     res.status(500).json({ error: "Something went wrong with Gemini API." });
   }
 };
