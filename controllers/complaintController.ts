@@ -7,7 +7,7 @@ import Complaint, { IComplaint } from "../models/complaint.js";
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;
   const userId = req.user?.userId;
-  const file = req.file as Express.Multer.File | undefined;
+  const file = req.file;
 
   if (!description) {
     res.status(400).json({ error: "Complaint text is required" });
@@ -17,33 +17,21 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
   try {
     const aiResponse = await axios.post(
       "https://complaint-ai.onrender.com/predict",
-      {
-        description,
-      }
+      { description }
     );
 
     const predictedCategory = aiResponse.data.category;
 
-    let assignedTo: string;
-
-    switch (predictedCategory) {
-      case "Supply":
-        assignedTo = "Distribution Supervisor";
-        break;
-      case "Employee":
-        assignedTo = "General Manager";
-        break;
-      default:
-        assignedTo = "Customer Service Supervisor";
-        break;
-    }
+    let assignedTo = "Customer Service Supervisor"; // default
+    if (predictedCategory === "Supply") assignedTo = "Distribution Supervisor";
+    else if (predictedCategory === "Employee") assignedTo = "General Manager";
 
     const newComplaint = await Complaint.create({
       user: userId,
       description,
       category: predictedCategory,
       assignedTo,
-      supportingFile: file?.filename,
+      supportingFile: file?.filename || null,
     });
 
     res.status(201).json(newComplaint);
@@ -52,6 +40,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const getUserComplaints = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.userId;
 

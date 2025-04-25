@@ -7,10 +7,7 @@ export interface IComplaint extends Document {
   status: string;
   createdAt: Date;
   assignedTo: string;
-  supportingFile: {
-    type: string;
-    required: false;
-  };
+  supportingFile?: string;
 }
 
 const ComplaintSchema = new Schema<IComplaint>(
@@ -20,6 +17,7 @@ const ComplaintSchema = new Schema<IComplaint>(
     category: { type: String, required: true },
     assignedTo: { type: String, required: true },
     status: { type: String, default: "Pending" },
+    supportingFile: { type: String, required: false }, // ✅ Now properly added
   },
   { timestamps: true }
 );
