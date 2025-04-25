@@ -56,14 +56,16 @@ const chatController = async (req: Request, res: Response) => {
   const { message } = req.body;
 
   if (!message || typeof message !== "string") {
-    return res.status(400).json({ error: "Invalid message input" });
+    res.status(400).json({ error: "Invalid message input" });
+    return;
   }
 
   if (!isRelevant(message)) {
-    return res.json({
+    res.json({
       reply:
         "I'm here to assist only with EEU Complaint Management System-related queries.",
     });
+    return;
   }
 
   try {
