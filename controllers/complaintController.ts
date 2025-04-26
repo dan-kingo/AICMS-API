@@ -3,6 +3,8 @@ import axios from "axios";
 
 import { AuthRequest } from "../middlewares/authMiddleware.js";
 import Complaint, { IComplaint } from "../models/complaint.js";
+import User from "../models/users.js";
+import Notification from "../models/notification.js";
 
 const createComplaint = async (req: AuthRequest, res: Response) => {
   const { description } = req.body;
@@ -33,6 +35,16 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
       assignedTo,
       supportingFile: fileUrl,
     });
+
+    // send notification
+    const handler = await User.findOne({ role: assignedTo });
+
+    if (handler) {
+      await Notification.create({
+        recipientId: handler._id,
+        message: `New complaint assigned to you in category: ${predictedCategory}`,
+      });
+    }
 
     res.status(201).json(newComplaint);
   } catch (err) {
@@ -107,6 +119,12 @@ const resolveComplaint = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Complaint not found" });
       return;
     }
+
+    // Send notification to the user
+    await Notification.create({
+      recipientId: updatedComplaint.user,
+      message: `Your complaint status was updated to: ${status}`,
+    });
 
     res.status(200).json(updatedComplaint);
   } catch (error) {

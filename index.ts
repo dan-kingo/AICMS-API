@@ -16,6 +16,7 @@ import mongoose from "mongoose";
 
 import morgan from "morgan";
 import corsOptions from "./middlewares/corsOptionsMiddleware.js";
+import notificationRouter from "./routes/notificationRouter.js";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -47,6 +48,7 @@ app.use("/api", userRouter);
 app.use("/api", chatRouter);
 app.use("/api", predictRouter);
 app.use("/api", complaintRouter);
+app.use("/api", notificationRouter);
 
 app.listen(PORT, () => {
   appDebug(`server started at port ${PORT}`);
