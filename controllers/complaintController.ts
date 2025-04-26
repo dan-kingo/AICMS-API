@@ -42,7 +42,7 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
     if (handler) {
       await Notification.create({
         recipientId: handler._id,
-        message: `New complaint assigned to you in category: ${predictedCategory}`,
+        message: `New complaint assigned to you: ${description}`,
       });
     }
 
@@ -123,7 +123,7 @@ const resolveComplaint = async (req: Request, res: Response) => {
     // Send notification to the user
     await Notification.create({
       recipientId: updatedComplaint.user,
-      message: `Your complaint status was updated to: ${status}`,
+      message: `Your complaint which is ${updatedComplaint.description} is ${status}`,
     });
 
     res.status(200).json(updatedComplaint);
