@@ -7,9 +7,17 @@ const getUserNotifications = async (req: AuthRequest, res: Response) => {
     const userId = req?.user?.userId;
     const userRole = req?.user?.role;
 
-    const notifications = await Notification.find({
-      $or: [{ receiverUserId: userId }, { receiverRole: userRole }],
-    }).sort({ createdAt: -1 });
+    let query = {};
+
+    if (userRole === "user") {
+      query = { recipientId: userId };
+    } else {
+      query = { receiverRole: userRole };
+    }
+
+    const notifications = await Notification.find(query).sort({
+      createdAt: -1,
+    });
     res.status(200).json(notifications);
   } catch (err) {
     console.error("Error fetching notifications:", err);
