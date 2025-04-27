@@ -163,6 +163,11 @@ const escalateComplaint = async (req: Request, res: Response) => {
     complaint.assignedTo = newAssignee;
     await complaint.save();
 
+    await Notification.create({
+      recipientId: complaint.user,
+      message: `Your complaint which is ${complaint.description} is escalated to higher officals!`,
+    });
+
     res.status(200).json({ message: "Complaint escalated", complaint });
   } catch (error) {
     res.status(500).json({ message: "Error escalating complaint", error });
