@@ -42,7 +42,8 @@ const createComplaint = async (req: AuthRequest, res: Response) => {
     if (handler) {
       await Notification.create({
         recipientId: handler._id,
-        message: `New complaint assigned to you: ${description}`,
+        message: `New complaint assigned regarding ${predictedCategory}: "${description}"`,
+        receiverRole: assignedTo,
       });
     }
 

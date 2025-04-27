@@ -4,10 +4,12 @@ import Notification from "../models/notification.js";
 
 const getUserNotifications = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.userId;
-    const notifications = await Notification.find({ recipientId: userId }).sort(
-      { createdAt: -1 }
-    );
+    const userId = req?.user?.userId;
+    const userRole = req?.user?.role;
+
+    const notifications = await Notification.find({
+      $or: [{ receiverUserId: userId }, { receiverRole: userRole }],
+    }).sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (err) {
     console.error("Error fetching notifications:", err);

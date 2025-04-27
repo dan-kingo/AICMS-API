@@ -8,6 +8,7 @@ const notificationSchema = new mongoose.Schema({
   },
   message: { type: String, required: true },
   isRead: { type: Boolean, default: false },
+  receiverRole: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
