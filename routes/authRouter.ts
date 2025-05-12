@@ -24,6 +24,6 @@ authRouter.post("/auth/resend-otp", resendOTP);
 authRouter.post("/auth/forgot-password", forgotPassword);
 authRouter.post("/auth/reset-password", resetPassword);
 authRouter.get("/auth/logout", logout);
-authRouter.get("/auth/suspend/:id", suspendUser);
-authRouter.get("/auth/unsuspend/:id", unSuspendUser);
+authRouter.patch("/auth/suspend/:id", suspendUser);
+authRouter.patch("/auth/unsuspend/:id", unSuspendUser);
 export default authRouter;
