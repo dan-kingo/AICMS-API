@@ -368,7 +368,7 @@ const suspendUser = async (req: Request, res: Response) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { suspended: true },
+      { isSuspended: true },
       { new: true }
     );
     res.json({ message: "User suspended.", user });
@@ -381,7 +381,7 @@ const unSuspendUser = async (req: Request, res: Response) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { suspended: false },
+      { isSuspended: false },
       { new: true }
     );
     res.json({ message: "User unsuspended.", user });
