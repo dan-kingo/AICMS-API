@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
   },
   password: String,
   confirmPassword: String,
+  isSuspended: { type: Boolean, default: false },
 });
 
 const User = mongoose.model("User", userSchema);

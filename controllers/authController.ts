@@ -228,7 +228,10 @@ const login = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Invalid Username!" });
       return;
     }
-
+    if (user.isSuspended) {
+      res.status(403).json({ message: "Your account is suspended." });
+      return;
+    }
     if (user.role !== "user") {
       res.status(400).json({ message: "Invalid User!" });
       return;
@@ -361,6 +364,31 @@ const logout = async (_req: Request, res: Response) => {
   });
 };
 
+const suspendUser = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { suspended: true },
+      { new: true }
+    );
+    res.json({ message: "User suspended.", user });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to suspend user." });
+  }
+};
+
+const unSuspendUser = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { suspended: false },
+      { new: true }
+    );
+    res.json({ message: "User unsuspended.", user });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to unsuspend user." });
+  }
+};
 export {
   register,
   login,
@@ -370,4 +398,6 @@ export {
   resendOTP,
   forgotPassword,
   resetPassword,
+  suspendUser,
+  unSuspendUser,
 };

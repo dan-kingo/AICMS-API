@@ -7,6 +7,8 @@ import {
   register,
   resendOTP,
   resetPassword,
+  suspendUser,
+  unSuspendUser,
   verifyOTP,
 } from "../controllers/authController.js";
 import { validateData } from "../middlewares/validationMiddleware.js";
@@ -22,4 +24,6 @@ authRouter.post("/auth/resend-otp", resendOTP);
 authRouter.post("/auth/forgot-password", forgotPassword);
 authRouter.post("/auth/reset-password", resetPassword);
 authRouter.get("/auth/logout", logout);
+authRouter.get("/auth/suspend/:id", suspendUser);
+authRouter.get("/auth/unsuspend/:id", unSuspendUser);
 export default authRouter;
